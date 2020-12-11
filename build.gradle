@@ -1,0 +1,23 @@
+plugins {
+    id 'java'
+    id 'idea'
+}
+
+group 'fr.bakaaless'
+version '1.0-SNAPSHOT'
+
+def spigotVersion = "1.15"
+def subVersion = ".2"
+
+sourceCompatibility = '1.8'
+
+repositories {
+    maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots" } // Spigot
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' } // Spigot
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'org.jetbrains', name: 'annotations', version: '16.0.2'
+    implementation group: 'org.spigotmc', name: 'spigot-api', version: spigotVersion + subVersion + '-R0.1-SNAPSHOT'
+}
