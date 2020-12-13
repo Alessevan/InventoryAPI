@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.logging.Level;
 
 public class InventoryAPI implements Listener {
 
@@ -26,6 +27,7 @@ public class InventoryAPI implements Listener {
     private List<ItemAPI> items;
     private Consumer<InventoryAPI> function;
     private boolean refreshed;
+    private boolean build;
 
     private JavaPlugin plugin;
 
@@ -45,6 +47,10 @@ public class InventoryAPI implements Listener {
     }
 
     public InventoryAPI setSize(final int size) {
+        if (build) {
+            this.plugin.getLogger().log(Level.WARNING, "Can't edit \"size\" option in InventoryAPI 'cause the inventory is already built");
+            return this;
+        }
         if (this.size <= 0 || this.size % 9 != 0 || this.size >= 54) {
             plugin.getLogger().severe("This inventory can't have a size of " + size);
             return this;
@@ -58,6 +64,10 @@ public class InventoryAPI implements Listener {
     }
 
     public InventoryAPI setTitle(final String title) {
+        if (build) {
+            this.plugin.getLogger().log(Level.WARNING, "Can't edit \"title\" option in InventoryAPI 'cause the inventory is already built");
+            return this;
+        }
         if (this.inventory != null && !this.title.equals(title)) {
             this.inventory.clear();
             this.inventory = Bukkit.createInventory(null, this.size, title);
@@ -67,11 +77,19 @@ public class InventoryAPI implements Listener {
     }
 
     public InventoryAPI setRefresh(final boolean refreshed) {
+        if (build) {
+            this.plugin.getLogger().log(Level.WARNING, "Can't edit \"refresh\" option in InventoryAPI 'cause the inventory is already built");
+            return this;
+        }
         this.refreshed = refreshed;
         return this;
     }
 
     public InventoryAPI setFunction(Consumer<InventoryAPI> function) {
+        if (build) {
+            this.plugin.getLogger().log(Level.WARNING, "Can't edit \"function\" option in InventoryAPI 'cause the inventory is already built");
+            return this;
+        }
         this.function = function;
         return this;
     }
@@ -152,6 +170,7 @@ public class InventoryAPI implements Listener {
     }
 
     public void build(final Player player) {
+        this.build = true;
         if (this.inventory == null) {
             this.inventory = Bukkit.createInventory(player, this.size, this.title);
             if (this.function != null)
@@ -163,7 +182,8 @@ public class InventoryAPI implements Listener {
                 this.inventory.setItem(itemAPI.getSlot(), itemAPI.getItem());
             });
             player.openInventory(this.inventory);
-            Scheduler.getInstance().add(this);
+            if (this.refreshed)
+                Scheduler.getInstance().add(this);
             plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
         }
         else {
@@ -180,7 +200,8 @@ public class InventoryAPI implements Listener {
 
     public void stop() {
         HandlerList.unregisterAll(this);
-        Scheduler.getInstance().remove(this);
+        if (this.refreshed)
+            Scheduler.getInstance().remove(this);
         this.inventory = null;
     }
 
