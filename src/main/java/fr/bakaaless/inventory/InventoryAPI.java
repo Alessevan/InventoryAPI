@@ -46,6 +46,10 @@ public class InventoryAPI implements Listener {
         return new InventoryAPI(plugin);
     }
 
+    public static InventoryAPI create(final Class<? extends JavaPlugin> plugin) {
+        return new InventoryAPI(JavaPlugin.getProvidingPlugin(plugin));
+    }
+
     public InventoryAPI setSize(final int size) {
         if (build) {
             this.plugin.getLogger().log(Level.WARNING, "Can't edit \"size\" option in InventoryAPI 'cause the inventory is already built");

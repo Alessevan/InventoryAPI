@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'fr.bakaaless'
-version '1.0.1'
+version '1.0.2'
 
 def spigotVersion = "1.15"
 def subVersion = ".2"
