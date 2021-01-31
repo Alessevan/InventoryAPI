@@ -19,8 +19,8 @@ public class Scheduler {
     }
 
     private final List<InventoryAPI> inventories = new ArrayList<>();
-    private final Timer timer;
-    private final TimerTask task;
+    private Timer timer;
+    private TimerTask task;
     private boolean isRunning;
 
     private int step;
@@ -40,14 +40,14 @@ public class Scheduler {
 
     public void exec() {
         if (step++ % 2 == 0)
-            inventories.forEach(inventoryAPI -> {
+            this.inventories.forEach(inventoryAPI -> {
                 inventoryAPI.getInventory().clear();
                 if (inventoryAPI.getFunction() != null)
                     inventoryAPI.getFunction().accept(inventoryAPI);
                 inventoryAPI.getItems().forEach(itemAPI -> inventoryAPI.getInventory().setItem(itemAPI.getSlot(), itemAPI.getItem()));
             });
         else
-            inventories.forEach(inventoryAPI -> inventoryAPI.getItems().forEach(itemAPI -> itemAPI.refresh(inventoryAPI)));
+            this.inventories.forEach(inventoryAPI -> inventoryAPI.getItems().forEach(itemAPI -> itemAPI.refresh(inventoryAPI)));
     }
 
     private void start() {
@@ -61,6 +61,16 @@ public class Scheduler {
     private void stop() {
         if (this.isRunning) {
             this.timer.cancel();
+            this.timer = null;
+            this.task = null;
+            this.timer = new Timer();
+            this.task = new TimerTask() {
+                @Override
+                public void run() {
+                    if (isRunning)
+                        exec();
+                }
+            };
             this.isRunning = false;
         }
     }

@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Level;
+import java.util.stream.IntStream;
 
 public class InventoryAPI implements Listener {
 
@@ -142,11 +143,13 @@ public class InventoryAPI implements Listener {
     }
 
     public InventoryAPI addItem(final int slot, final ItemStack itemStack) {
-        return this.addItem(slot, itemStack, true);
+        return this.addItem(slot, itemStack, true, inventoryClickEvent -> {
+        });
     }
 
     public InventoryAPI addItem(final int slot, final Function<Object, ItemStack> function) {
-        return this.addItem(slot, function, true);
+        return this.addItem(slot, function, true, inventoryClickEvent -> {
+        });
     }
 
     public InventoryAPI addItem(final int slot, final ItemStack itemStack, final boolean cancelled) {
@@ -170,6 +173,41 @@ public class InventoryAPI implements Listener {
     public InventoryAPI addItem(final ItemAPI itemAPI) {
         this.clearSlot(itemAPI.getSlot());
         this.items.add(itemAPI);
+        return this;
+    }
+
+    public int[] getBorders() {
+        int size = this.inventory.getSize();
+        return IntStream.range(0, size).filter(i -> size < 27 || i < 9 || i % 9 == 0 || (i - 8) % 9 == 0 || i > size - 9).toArray();
+    }
+
+    public InventoryAPI setBorder(final ItemStack itemStack) {
+        for (int index : this.getBorders())
+            this.addItem(index, itemStack, true, inventoryClickEvent -> {});
+        return this;
+    }
+
+    public InventoryAPI setBorder(final ItemStack itemStack, final boolean cancelled) {
+        for (int index : this.getBorders())
+            this.addItem(index, itemStack, cancelled, inventoryClickEvent -> {});
+        return this;
+    }
+
+    public InventoryAPI setBorder(final Function<Object, ItemStack> function, final boolean cancelled) {
+        for (int index : this.getBorders())
+            this.addItem(index, function, cancelled, inventoryClickEvent -> {});
+        return this;
+    }
+
+    public InventoryAPI setBorder(final ItemStack itemStack, final boolean cancelled, final Consumer<InventoryClickEvent> consumer) {
+        for (int index : this.getBorders())
+            this.addItem(index, itemStack, cancelled, consumer);
+        return this;
+    }
+
+    public InventoryAPI setBorder(final Function<Object, ItemStack> function, final boolean cancelled, final Consumer<InventoryClickEvent> consumer) {
+        for (int index : this.getBorders())
+            this.addItem(index, function, cancelled, consumer);
         return this;
     }
 
