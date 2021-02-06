@@ -177,8 +177,7 @@ public class InventoryAPI implements Listener {
     }
 
     public int[] getBorders() {
-        int size = this.inventory.getSize();
-        return IntStream.range(0, size).filter(i -> size < 27 || i < 9 || i % 9 == 0 || (i - 8) % 9 == 0 || i > size - 9).toArray();
+        return IntStream.range(0, this.size).filter(i -> this.size < 27 || i < 9 || i % 9 == 0 || (i - 8) % 9 == 0 || i > this.size - 9).toArray();
     }
 
     public InventoryAPI setBorder(final ItemStack itemStack) {
