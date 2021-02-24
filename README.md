@@ -48,6 +48,17 @@ inventory.addItem(S, o -> {
 inventory.build(player);
 ```
 
+## Intégration
+
+➠  Pour intégrer ce code à gradle :
+```gradle
+repositories {
+  maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+  implementation group: 'com.github.BakaAless', name: 'InventoryAPI', version: 'v1.0.3'
+}```
 
 ## Licence
 
