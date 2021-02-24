@@ -58,7 +58,8 @@ repositories {
 
 dependencies {
   implementation group: 'com.github.BakaAless', name: 'InventoryAPI', version: 'v1.0.3'
-}```
+}
+```
 
 ## Licence
 
