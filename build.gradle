@@ -6,12 +6,12 @@ plugins {
 }
 
 group 'fr.bakaaless'
-version '1.0.3'
+version '1.0.4'
 
 def spigotVersion = "1.16"
 def subVersion = ".5"
 
-sourceCompatibility = '1.8'
+sourceCompatibility = targetCompatibility = '1.11'
 
 repositories {
     maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots" } // Spigot
