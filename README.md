@@ -50,6 +50,8 @@ inventory.build(player);
 
 ## Intégration
 
+➠ La documentation Java est disponible [ici](https://javadoc.jitpack.io/com/github/BakaAless/InventoryAPI/latest/javadoc/)
+
 [![Release](https://jitpack.io/v/BakaAless/InventoryAPI.svg)](https://jitpack.io/#BakaAless/InventoryAPI)
 
 ➠  Pour intégrer ce code à gradle, en remplaçant `Version` par la version ci-dessus :
