@@ -6,7 +6,6 @@ on:
       - dev
   push:
     branches:
-      - master
       - dev
 
 jobs:
