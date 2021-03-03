@@ -48,6 +48,10 @@ inventory.addItem(S, o -> {
 inventory.build(player);
 ```
 
+## Documentation
+
+➠ La documentation Java est disponible [ici](https://javadoc.jitpack.io/com/github/BakaAless/InventoryAPI/latest/javadoc/).
+
 ## Intégration
 
 [![Release](https://jitpack.io/v/BakaAless/InventoryAPI.svg)](https://jitpack.io/#BakaAless/InventoryAPI)
