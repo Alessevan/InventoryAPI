@@ -7,6 +7,8 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -27,6 +29,7 @@ public class InventoryAPI implements Listener {
     private String title;
     private List<ItemAPI> items;
     private Consumer<InventoryAPI> function;
+    private boolean interactionCancel;
     private boolean refreshed;
     private boolean build;
 
@@ -38,6 +41,7 @@ public class InventoryAPI implements Listener {
         this.title = "";
         this.items = new ArrayList<>();
         this.refreshed = false;
+        this.interactionCancel = false;
     }
 
     private InventoryAPI() {
@@ -99,6 +103,11 @@ public class InventoryAPI implements Listener {
         return this;
     }
 
+    public InventoryAPI setInteractionCancelled(final boolean interactionCancelled) {
+        this.interactionCancel = interactionCancelled;
+        return this;
+    }
+
     public int getSize() {
         return this.size;
     }
@@ -125,6 +134,10 @@ public class InventoryAPI implements Listener {
 
     public Consumer<InventoryAPI> getFunction() {
         return function;
+    }
+
+    public boolean isInteractionCancelled() {
+        return this.interactionCancel;
     }
 
     public InventoryAPI clearSlot(final int slot) {
@@ -263,6 +276,7 @@ public class InventoryAPI implements Listener {
             return;
         if (!e.getClickedInventory().equals(this.inventory))
             return;
+        e.setCancelled(this.interactionCancel);
         this.items.forEach(itemAPI -> {
             if (e.getSlot() != itemAPI.getSlot())
                 return;
@@ -271,5 +285,20 @@ public class InventoryAPI implements Listener {
             e.setCancelled(itemAPI.isCancelled());
             itemAPI.getConsumer().accept(e);
         });
+    }
+
+    @EventHandler
+    public void onMove(final InventoryMoveItemEvent e) {
+        if (!e.getSource().equals(this.inventory) || !e.getInitiator().equals(this.inventory) && !e.getDestination().equals(this.inventory))
+            return;
+        e.setCancelled(this.interactionCancel);
+    }
+
+    @EventHandler
+    public void onDrag(final InventoryDragEvent e) {
+        if (!e.getInventory().equals(this.inventory))
+            return;
+        this.items.stream().filter(item -> e.getInventorySlots().contains(item.getSlot()) || e.getRawSlots().contains(item.getSlot()))
+                .forEach(item -> e.setCancelled(e.isCancelled() || item.isCancelled()));
     }
 }
