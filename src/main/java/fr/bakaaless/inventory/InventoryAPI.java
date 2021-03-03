@@ -22,6 +22,9 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.IntStream;
 
+/**
+ * The main object of <b>InventoryAPI</b>, used to build inventories.
+ */
 public class InventoryAPI implements Listener {
 
     private Inventory inventory;
@@ -47,14 +50,29 @@ public class InventoryAPI implements Listener {
     private InventoryAPI() {
     }
 
+    /**
+     * Create an <b>InventoryAPI</b> instance.
+     * @param plugin An instance of the main class of your plugin.
+     * @return New InventoryAPI object
+     */
     public static InventoryAPI create(final JavaPlugin plugin) {
         return new InventoryAPI(plugin);
     }
 
+    /**
+     * Same as {@link #create(JavaPlugin)} but you can give directly the class.
+     * @param plugin The class object of your main class. (Like MyPlugin.class)
+     * @return New InventoryAPI object
+     */
     public static InventoryAPI create(final Class<? extends JavaPlugin> plugin) {
         return new InventoryAPI(JavaPlugin.getProvidingPlugin(plugin));
     }
 
+    /**
+     * Set the size of your inventory
+     * @param size The size of the inventory (Multiple of 9, 54 at the maximum)
+     * @return Your InventoryAPI object
+     */
     public InventoryAPI setSize(final int size) {
         if (build) {
             this.plugin.getLogger().log(Level.WARNING, "Can't edit \"size\" option in InventoryAPI 'cause the inventory is already built");
@@ -72,6 +90,11 @@ public class InventoryAPI implements Listener {
         return this;
     }
 
+    /**
+     * Set the title of your inventory
+     * @param title The title of your inventory
+     * @return Your InventoryAPI object
+     */
     public InventoryAPI setTitle(final String title) {
         if (build) {
             this.plugin.getLogger().log(Level.WARNING, "Can't edit \"title\" option in InventoryAPI 'cause the inventory is already built");
@@ -85,6 +108,11 @@ public class InventoryAPI implements Listener {
         return this;
     }
 
+    /**
+     * Enable the refresh status (Every 2 ticks).
+     * @param refreshed A boolean to enable/disable the refresh status
+     * @return Your InventoryAPI object
+     */
     public InventoryAPI setRefresh(final boolean refreshed) {
         if (build) {
             this.plugin.getLogger().log(Level.WARNING, "Can't edit \"refresh\" option in InventoryAPI 'cause the inventory is already built");
@@ -94,7 +122,12 @@ public class InventoryAPI implements Listener {
         return this;
     }
 
-    public InventoryAPI setFunction(Consumer<InventoryAPI> function) {
+    /**
+     * Define all of the content of the refresh function.
+     * @param function A consumer, that will contains all of your modifications.
+     * @return Your InventoryAPI object
+     */
+    public InventoryAPI setFunction(final Consumer<InventoryAPI> function) {
         if (build) {
             this.plugin.getLogger().log(Level.WARNING, "Can't edit \"function\" option in InventoryAPI 'cause the inventory is already built");
             return this;
@@ -103,23 +136,44 @@ public class InventoryAPI implements Listener {
         return this;
     }
 
+    /**
+     * Enable interaction protection for your Inventory
+     * @param interactionCancelled A boolean, to enable/disable
+     * @return Your InventoryAPI object
+     */
     public InventoryAPI setInteractionCancelled(final boolean interactionCancelled) {
         this.interactionCancel = interactionCancelled;
         return this;
     }
 
+    /**
+     * Get the size of your inventory.
+     * @return The size of your Inventory, an integer.
+     */
     public int getSize() {
         return this.size;
     }
 
+    /**
+     * Get the title of your inventory
+     * @return The title of your Inventory, a string.
+     */
     public String getTitle() {
         return this.title;
     }
 
+    /**
+     * Get the list of your inventory's items
+     * @return The items in your inventory, a list of {@link ItemAPI}
+     */
     public List<ItemAPI> getItems() {
         return this.items;
     }
 
+    /**
+     * Get the boolean of the refresh task.
+     * @return A boolean, true if enabled, else false.
+     */
     public boolean isRefreshed() {
         return this.refreshed;
     }
@@ -132,14 +186,27 @@ public class InventoryAPI implements Listener {
         return this.inventory;
     }
 
+    /**
+     * Get the consumer of the refresh task of your Inventory.
+     * @return A consumer, that correspond to the refresh task.
+     */
     public Consumer<InventoryAPI> getFunction() {
         return function;
     }
 
+    /**
+     * Get the interactionCancelled boolean.
+     * @return A boolean, true if interaction protection is enabled, else false.
+     */
     public boolean isInteractionCancelled() {
         return this.interactionCancel;
     }
 
+    /**
+     * Clear a slot of your inventory
+     * @param slot The id of the slot, an integer
+     * @return Your InventoryAPI object
+     */
     public InventoryAPI clearSlot(final int slot) {
         Optional<ItemAPI> itemAPI = Optional.empty();
         for (final Iterator<ItemAPI> it = this.items.iterator(); it.hasNext(); itemAPI = Optional.ofNullable(it.next())) {
@@ -151,78 +218,169 @@ public class InventoryAPI implements Listener {
         return this;
     }
 
+    /**
+     * Get the item that correspond to the given slot.
+     * @param slot The id of the slot, an integer
+     * @return An {@link ItemAPI} object if slot is set, else null.
+     */
     public Optional<ItemAPI> getItem(final int slot) {
         return this.items.stream().filter(item -> item.getSlot() == slot).findFirst();
     }
 
+    /**
+     * Set an item in a slot of your inventory.
+     * @param slot The id of the slot, an integer
+     * @param itemStack The ItemStack to set
+     * @return Your InventoryAPI object
+     */
     public InventoryAPI addItem(final int slot, final ItemStack itemStack) {
         return this.addItem(slot, itemStack, true, inventoryClickEvent -> {
         });
     }
 
+    /**
+     * Set an item in a slot of your inventory.
+     * @param slot The id of the slot, an integer
+     * @param function A function that return an ItemStack, for the refresh task.
+     * @return Your InventoryAPI object
+     */
     public InventoryAPI addItem(final int slot, final Function<Object, ItemStack> function) {
         return this.addItem(slot, function, true, inventoryClickEvent -> {
         });
     }
 
+    /**
+     * Same as {@link #addItem(int, ItemStack)}, except you can change the interaction protection for this slot.
+     * @param slot The id of the slot, an integer
+     * @param itemStack The ItemStack to set
+     * @param cancelled The boolean to enable/disable the interaction protection for this slot
+     * @return Your InventoryAPI object
+     */
     public InventoryAPI addItem(final int slot, final ItemStack itemStack, final boolean cancelled) {
         return this.addItem(slot, itemStack, cancelled, inventoryClickEvent -> {
         });
     }
 
+    /**
+     * Same as {@link #addItem(int, Function, boolean)}, except you can change the interaction protection for this slot.
+     * @param slot The id of the slot, an integer
+     * @param function A function that return an ItemStack, for the refresh task.
+     * @param cancelled The boolean to enable/disable the interaction protection for this slot
+     * @return Your InventoryAPI object
+     */
     public InventoryAPI addItem(final int slot, final Function<Object, ItemStack> function, final boolean cancelled) {
         return this.addItem(slot, function, cancelled, inventoryClickEvent -> {
         });
     }
 
+    /**
+     * Same as {@link #addItem(int, ItemStack, boolean, Consumer)}, except you can add custom actions to the InventoryClickEvent.
+     * @param slot The id of the slot, an integer
+     * @param itemStack The ItemStack to set
+     * @param cancelled The boolean to enable/disable the interaction protection for this slot
+     * @param consumer A lambda expression that correspond to the executed code when item is clicked
+     * @return Your InventoryAPI object
+     */
     public InventoryAPI addItem(final int slot, final ItemStack itemStack, final boolean cancelled, final Consumer<InventoryClickEvent> consumer) {
         return this.addItem(new ItemAPI(slot, itemStack, cancelled, consumer));
     }
 
+    /**
+     * Same as {@link #addItem(int, Function, boolean, Consumer)}, except you can add custom actions to the InventoryClickEvent.
+     * @param slot The id of the slot, an integer
+     * @param function A function that return an ItemStack, for the refresh task
+     * @param cancelled The boolean to enable/disable the interaction protection for this slot
+     * @param consumer A lambda expression that correspond to the executed code when item is clicked
+     * @return Your InventoryAPI object
+     */
     public InventoryAPI addItem(final int slot, final Function<Object, ItemStack> function, final boolean cancelled, final Consumer<InventoryClickEvent> consumer) {
         return this.addItem(new ItemAPI(slot, function, cancelled, consumer));
     }
 
+    /**
+     * Set an item in your inventory, using {@link ItemAPI}
+     * @param itemAPI An {@link ItemAPI}
+     * @return Your InventoryAPI object
+     */
     public InventoryAPI addItem(final ItemAPI itemAPI) {
         this.clearSlot(itemAPI.getSlot());
         this.items.add(itemAPI);
         return this;
     }
 
+    /**
+     * Get the borders of your inventory, depends of the size of the inventory
+     * @return An integer array, that contains all the slots of the border
+     */
     public int[] getBorders() {
         return IntStream.range(0, this.size).filter(i -> this.size < 27 || i < 9 || i % 9 == 0 || (i - 8) % 9 == 0 || i > this.size - 9).toArray();
     }
 
+    /**
+     * Set the item in the border of your inventory.
+     * @param itemStack The item to set, an ItemStack
+     * @return Your InventoryAPI object
+     */
     public InventoryAPI setBorder(final ItemStack itemStack) {
         for (int index : this.getBorders())
             this.addItem(index, itemStack, true, inventoryClickEvent -> {});
         return this;
     }
 
+    /**
+     * Same as {@link #setBorder(ItemStack)}
+     * @param itemStack The item to set, an ItemStack
+     * @param cancelled The boolean to enable/disable the interaction protection for this slot
+     * @return Your InventoryAPI object
+     */
     public InventoryAPI setBorder(final ItemStack itemStack, final boolean cancelled) {
         for (int index : this.getBorders())
             this.addItem(index, itemStack, cancelled, inventoryClickEvent -> {});
         return this;
     }
 
+    /**
+     * Same as {@link #setBorder(ItemStack, boolean, Consumer)}, except you give a Function instead of an ItemStack
+     * @param function A function that return an ItemStack, for the refresh task
+     * @param cancelled The boolean to enable/disable the interaction protection for this slot
+     * @return Your InventoryAPI object
+     */
     public InventoryAPI setBorder(final Function<Object, ItemStack> function, final boolean cancelled) {
         for (int index : this.getBorders())
             this.addItem(index, function, cancelled, inventoryClickEvent -> {});
         return this;
     }
 
+    /**
+     * Same as {@link #setBorder(ItemStack, boolean)}, except you
+     * @param itemStack The item to set, an ItemStack
+     * @param cancelled The boolean to enable/disable the interaction protection for this slot
+     * @param consumer A lambda expression that correspond to the executed code when item is clicked
+     * @return Your InventoryAPI object
+     */
     public InventoryAPI setBorder(final ItemStack itemStack, final boolean cancelled, final Consumer<InventoryClickEvent> consumer) {
         for (int index : this.getBorders())
             this.addItem(index, itemStack, cancelled, consumer);
         return this;
     }
 
+    /**
+     * Same as {@link #setBorder(ItemStack, boolean, Consumer)}, except you give a Function instead of an ItemStack
+     * @param function A function that return an ItemStack, for the refresh task
+     * @param cancelled The boolean to enable/disable the interaction protection for this slot
+     * @param consumer A lambda expression that correspond to the executed code when item is clicked
+     * @return Your InventoryAPI object
+     */
     public InventoryAPI setBorder(final Function<Object, ItemStack> function, final boolean cancelled, final Consumer<InventoryClickEvent> consumer) {
         for (int index : this.getBorders())
             this.addItem(index, function, cancelled, consumer);
         return this;
     }
 
+    /**
+     * Build and open the inventory to a player
+     * @param player The player to open the inventory
+     */
     public void build(final Player player) {
         this.build = true;
         if (this.inventory == null) {
@@ -252,6 +410,9 @@ public class InventoryAPI implements Listener {
         }
     }
 
+    /**
+     * Stop the refresh method for this inventory
+     */
     public void stop() {
         HandlerList.unregisterAll(this);
         if (this.refreshed)
