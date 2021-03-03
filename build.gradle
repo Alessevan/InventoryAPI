@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'fr.bakaaless'
-version '1.0.4'
+version '1.0.5'
 
 def spigotVersion = '1.16'
 def subVersion = '.5'
@@ -26,6 +26,21 @@ dependencies {
 
 processResources {
     filter ReplaceTokens, tokens: [NAME: rootProject.name, VERSION: version, APIVERSION: spigotVersion]
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
 }
 
 jar {
