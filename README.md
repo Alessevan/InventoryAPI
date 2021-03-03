@@ -50,14 +50,16 @@ inventory.build(player);
 
 ## Intégration
 
-➠  Pour intégrer ce code à gradle :
+[![Release](https://jitpack.io/v/BakaAless/InventoryAPI.svg)](https://jitpack.io/#BakaAless/InventoryAPI)
+
+➠  Pour intégrer ce code à gradle, en remplaçant `Version` par la version ci-dessus :
 ```gradle
 repositories {
   maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-  implementation group: 'com.github.BakaAless', name: 'InventoryAPI', version: 'v1.0.3'
+  implementation group: 'com.github.BakaAless', name: 'InventoryAPI', version: 'VERSION'
 }
 ```
 
