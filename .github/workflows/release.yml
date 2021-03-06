@@ -32,6 +32,18 @@ jobs:
           release_name: ${{ github.event.head_commit.message }}
           body: |
             ${{ github.event.commit.message }}
+
+            To ingrate to gradle:
+
+            ```gradle
+            repositories {
+              maven { url 'https://jitpack.io' }
+            }
+
+            dependencies {
+              implementation group: 'com.github.BakaAless', name: 'InventoryAPI', version: '${{ github.run_id }}'
+            }
+            ```
           draft: false
           prerelease: false
       - name: Upload Release Asset
