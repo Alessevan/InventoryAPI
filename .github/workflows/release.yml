@@ -33,7 +33,7 @@ jobs:
           body: |
             ${{ github.event.commit.message }}
 
-            To ingrate to gradle:
+            To integrate to gradle:
 
             ```gradle
             repositories {
