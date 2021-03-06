@@ -5,13 +5,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -30,6 +28,7 @@ public class InventoryAPI implements Listener {
     private Inventory inventory;
     private int size;
     private String title;
+    private InventoryType type;
     private List<ItemAPI> items;
     private Consumer<InventoryAPI> function;
     private boolean interactionCancel;
@@ -42,6 +41,7 @@ public class InventoryAPI implements Listener {
         this.plugin = plugin;
         this.size = 9;
         this.title = "";
+        this.type = null;
         this.items = new ArrayList<>();
         this.refreshed = false;
         this.interactionCancel = false;
@@ -69,7 +69,7 @@ public class InventoryAPI implements Listener {
     }
 
     /**
-     * Set the size of your inventory
+     * Set the size of your inventory. Can't be used if the inventory type isn't null.
      * @param size The size of the inventory (Multiple of 9, 54 at the maximum)
      * @return Your InventoryAPI object
      */
@@ -84,7 +84,7 @@ public class InventoryAPI implements Listener {
         }
         if (this.inventory != null && this.size != size) {
             this.inventory.clear();
-            this.inventory = Bukkit.createInventory(null, size, this.title);
+            this.inventory = generate();
         }
         this.size = size;
         return this;
@@ -102,9 +102,27 @@ public class InventoryAPI implements Listener {
         }
         if (this.inventory != null && !this.title.equals(title)) {
             this.inventory.clear();
-            this.inventory = Bukkit.createInventory(null, this.size, title);
+            this.inventory = generate();
         }
         this.title = title;
+        return this;
+    }
+
+    /**
+     * Set the type of your inventory. Have to be null to use the size.
+     * @param type The type of the inventory, null at default.
+     * @return Your InventoryAPI object.
+     */
+    public InventoryAPI setType(final InventoryType type) {
+        if (build) {
+            this.plugin.getLogger().log(Level.WARNING, "Can't edit \"type\" option in InventoryAPI 'cause the inventory is already built");
+            return this;
+        }
+        if (this.inventory != null && !this.type.equals(type)) {
+            this.inventory.clear();
+            this.inventory = generate();
+        }
+        this.type = type;
         return this;
     }
 
@@ -148,18 +166,27 @@ public class InventoryAPI implements Listener {
 
     /**
      * Get the size of your inventory.
-     * @return The size of your Inventory, an integer.
+     * @return The size of your Inventory, an <b>integer</b>.
      */
     public int getSize() {
         return this.size;
     }
 
     /**
-     * Get the title of your inventory
-     * @return The title of your Inventory, a string.
+     * Get the title of your inventory.
+     * @return The title of your Inventory, a <b>String</b>.
      */
     public String getTitle() {
         return this.title;
+    }
+
+    /**
+     * Get the type of your inventory.
+     * @return the type of your inventory, a <b>InventoryType</b>.
+     */
+    @Nullable
+    public InventoryType getType() {
+        return this.type;
     }
 
     /**
@@ -384,7 +411,7 @@ public class InventoryAPI implements Listener {
     public void build(final Player player) {
         this.build = true;
         if (this.inventory == null) {
-            this.inventory = Bukkit.createInventory(player, this.size, this.title);
+            this.inventory = generate();
             if (this.function != null)
                 this.function.accept(this);
             this.items.forEach(itemAPI -> {
@@ -418,6 +445,13 @@ public class InventoryAPI implements Listener {
         if (this.refreshed)
             Scheduler.getInstance().remove(this);
         this.inventory = null;
+    }
+
+    private Inventory generate() {
+        if (this.type == null)
+            return this.plugin.getServer().createInventory(null, this.size, this.title);
+        else
+            return this.plugin.getServer().createInventory(null, this.type, this.title);
     }
 
     @EventHandler
