@@ -13,10 +13,10 @@ import java.util.function.Function;
 public class ItemAPI {
 
     private final int slot;
-    private final Function<Object, ItemStack> function;
+    private Function<Object, ItemStack> function;
     private ItemStack item;
-    private final boolean cancelled;
-    private final Consumer<InventoryClickEvent> consumer;
+    private boolean cancelled;
+    private Consumer<InventoryClickEvent> consumer;
 
     /**
      * @param slot      The slot where will be located the item.
@@ -91,5 +91,37 @@ public class ItemAPI {
      */
     public Consumer<InventoryClickEvent> getConsumer() {
         return this.consumer;
+    }
+
+    /**
+     * Change the function that create the ItemStack of the ItemAPI.
+     * @param function the function.
+     */
+    public void setFunction(final Function<Object, ItemStack> function) {
+        this.function = function;
+    }
+
+    /**
+     * Change the item of the ItemAPI.
+     * @param item the new item.
+     */
+    public void setItem(final ItemStack item) {
+        this.item = item;
+    }
+
+    /**
+     * Change id the interaction is cancelled.
+     * @param cancelled is the interaction cancelled.
+     */
+    public void setCancelled(final boolean cancelled) {
+        this.cancelled = cancelled;
+    }
+
+    /**
+     * Change the consumer of the ItemAPI.
+     * @param consumer the consumer to execute.
+     */
+    public void setConsumer(final Consumer<InventoryClickEvent> consumer) {
+        this.consumer = consumer;
     }
 }
