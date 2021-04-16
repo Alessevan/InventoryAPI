@@ -1,6 +1,6 @@
 package fr.bakaaless.inventory;
 
-import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -472,14 +473,22 @@ public class InventoryAPI implements Listener {
         if (!e.getClickedInventory().equals(this.inventory))
             return;
         e.setCancelled(this.interactionCancel);
+        final AtomicBoolean slotRegister = new AtomicBoolean(false);
         this.items.forEach(itemAPI -> {
             if (e.getSlot() != itemAPI.getSlot())
                 return;
+            slotRegister.set(true);
             if (e.getCurrentItem() == null)
                 return;
             e.setCancelled(itemAPI.isCancelled());
             itemAPI.getConsumer().accept(e);
         });
+        if (!slotRegister.get()) {
+            if (e.getInventory().getItem(e.getSlot()) == null || e.getInventory().getItem(e.getSlot()).getType() == Material.AIR)
+                this.clearSlot(e.getSlot());
+            else
+                this.addItem(e.getSlot(), e.getInventory().getItem(e.getSlot()), false);
+        }
     }
 
     @EventHandler
