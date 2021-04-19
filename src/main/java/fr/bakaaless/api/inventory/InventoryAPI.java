@@ -1,4 +1,4 @@
-package fr.bakaaless.inventory;
+package fr.bakaaless.api.inventory;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

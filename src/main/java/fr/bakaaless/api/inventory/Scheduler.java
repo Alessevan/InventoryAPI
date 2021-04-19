@@ -1,4 +1,4 @@
-package fr.bakaaless.inventory;
+package fr.bakaaless.api.inventory;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
