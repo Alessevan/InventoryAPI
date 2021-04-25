@@ -478,14 +478,16 @@ public class InventoryAPI implements Listener {
     @EventHandler
     public void onClose(final InventoryCloseEvent e) {
         if (e.getView().getTopInventory().equals(this.inventory)) {
+            if (this.closeEvent != null)
+                this.closeEvent.accept(e);
             this.stop();
-            this.closeEvent.accept(e);
         }
         if (!e.getInventory().equals(this.inventory))
             return;
         if (e.getInventory().getHolder() == null) {
+            if (this.closeEvent != null)
+                this.closeEvent.accept(e);
             this.stop();
-            this.closeEvent.accept(e);
         }
     }
 
