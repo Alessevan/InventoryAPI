@@ -32,6 +32,7 @@ public class InventoryAPI implements Listener {
     private InventoryType type;
     private List<ItemAPI> items;
     private Consumer<InventoryAPI> function;
+    private Consumer<InventoryCloseEvent> closeEvent;
     private boolean interactionCancel;
     private boolean refreshed;
     private boolean build;
@@ -156,6 +157,16 @@ public class InventoryAPI implements Listener {
     }
 
     /**
+     * Define the close function.
+     * @param function A consumer, that will be triggered when the player will close the inventory.
+     * @return Your InventoryAPI object
+     */
+    public InventoryAPI setCloseFunction(final Consumer<InventoryCloseEvent> function) {
+        this.closeEvent = function;
+        return this;
+    }
+
+    /**
      * Enable interaction protection for your Inventory
      * @param interactionCancelled A boolean, to enable/disable
      * @return Your InventoryAPI object
@@ -216,10 +227,18 @@ public class InventoryAPI implements Listener {
 
     /**
      * Get the consumer of the refresh task of your Inventory.
-     * @return A consumer, that correspond to the refresh task.
+     * @return A consumer, that corresponds to the refresh task.
      */
     public Consumer<InventoryAPI> getFunction() {
         return function;
+    }
+
+    /**
+     * Get the consumer which will be triggered when the player will close the inventory.
+     * @return A consumer, that corresponds to close event.
+     */
+    public Consumer<InventoryCloseEvent> getCloseEvent() {
+        return closeEvent;
     }
 
     /**
@@ -446,6 +465,7 @@ public class InventoryAPI implements Listener {
         if (this.refreshed)
             Scheduler.getInstance().remove(this);
         this.inventory = null;
+        this.build = false;
     }
 
     private Inventory generate() {
@@ -463,6 +483,7 @@ public class InventoryAPI implements Listener {
             return;
         if (e.getInventory().getHolder() == null) {
             this.stop();
+            this.closeEvent.accept(e);
         }
     }
 
