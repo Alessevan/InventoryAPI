@@ -33,6 +33,7 @@ public class InventoryAPI implements Listener {
     private List<ItemAPI> items;
     private Consumer<InventoryAPI> function;
     private Consumer<InventoryCloseEvent> closeEvent;
+    private Consumer<InventoryClickEvent> clickEvent;
     private boolean interactionCancel;
     private boolean refreshed;
     private boolean build;
@@ -163,6 +164,16 @@ public class InventoryAPI implements Listener {
      */
     public InventoryAPI setCloseFunction(final Consumer<InventoryCloseEvent> function) {
         this.closeEvent = function;
+        return this;
+    }
+
+    /**
+     * Define the click function.
+     * @param function A consumer, that will be triggered when the player will click in the inventory.
+     * @return Your InventoryAPI object
+     */
+    public InventoryAPI setClickFunction(final Consumer<InventoryClickEvent> function) {
+        this.clickEvent = function;
         return this;
     }
 
@@ -497,6 +508,8 @@ public class InventoryAPI implements Listener {
             return;
         if (!e.getClickedInventory().equals(this.inventory))
             return;
+        if (this.clickEvent != null)
+            this.clickEvent.accept(e);
         e.setCancelled(this.interactionCancel);
         final AtomicBoolean slotRegister = new AtomicBoolean(false);
         this.items.forEach(itemAPI -> {
