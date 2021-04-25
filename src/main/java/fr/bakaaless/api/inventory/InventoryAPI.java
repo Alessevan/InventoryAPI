@@ -504,12 +504,14 @@ public class InventoryAPI implements Listener {
 
     @EventHandler
     public void onInteract(final InventoryClickEvent e) {
+        if (e.getInventory().equals(this.inventory)) {
+            if (this.clickEvent != null)
+                this.clickEvent.accept(e);
+        }
         if (e.getClickedInventory() == null)
             return;
         if (!e.getClickedInventory().equals(this.inventory))
             return;
-        if (this.clickEvent != null)
-            this.clickEvent.accept(e);
         e.setCancelled(this.interactionCancel);
         final AtomicBoolean slotRegister = new AtomicBoolean(false);
         this.items.forEach(itemAPI -> {
