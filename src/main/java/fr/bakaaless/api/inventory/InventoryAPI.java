@@ -168,6 +168,16 @@ public class InventoryAPI implements Listener {
     }
 
     /**
+     * Define the click function.
+     * @param function A consumer, that will be triggered when the player click while the inventory is opened.
+     * @return Your InventoryAPI object
+     */
+    public InventoryAPI setClickFunction(final Consumer<InventoryClickEvent> function) {
+        this.clickEvent = function;
+        return this;
+    }
+
+    /**
      * Enable interaction protection for your Inventory
      * @param interactionCancelled A boolean, to enable/disable
      * @return Your InventoryAPI object
@@ -239,7 +249,7 @@ public class InventoryAPI implements Listener {
      * @return A consumer, that corresponds to the refresh task.
      */
     public Consumer<InventoryAPI> getFunction() {
-        return function;
+        return this.function;
     }
 
     /**
@@ -247,7 +257,15 @@ public class InventoryAPI implements Listener {
      * @return A consumer, that corresponds to close event.
      */
     public Consumer<InventoryCloseEvent> getCloseEvent() {
-        return closeEvent;
+        return this.closeEvent;
+    }
+
+    /**
+     * Get the consumer which will be triggered when the player will click will the inventory is opened.
+     * @return A consumer, that corresponds to click event.
+     */
+    public Consumer<InventoryClickEvent> getClickEvent() {
+        return this.clickEvent;
     }
 
     /**
@@ -487,20 +505,24 @@ public class InventoryAPI implements Listener {
     @EventHandler
     public void onClose(final InventoryCloseEvent e) {
         if (e.getView().getTopInventory().equals(this.inventory)) {
+            if (this.closeEvent != null)
+                this.closeEvent.accept(e);
             this.stop();
-            this.closeEvent.accept(e);
         }
         if (!e.getInventory().equals(this.inventory))
             return;
         if (e.getInventory().getHolder() == null) {
+            if (this.closeEvent != null)
+                this.closeEvent.accept(e);
             this.stop();
-            this.closeEvent.accept(e);
         }
     }
 
     @EventHandler
     public void onInteract(final InventoryClickEvent e) {
-        if (e.getInventory().equals(this.inventory))
+        if (e.getView() == null || e.getView().getTopInventory() == null)
+            return;
+        if (e.getView().getTopInventory().equals(this.inventory))
             if (this.clickEvent != null)
                 this.clickEvent.accept(e);
         if (e.getClickedInventory() == null)
