@@ -33,6 +33,7 @@ public class InventoryAPI implements Listener {
     private List<ItemAPI> items;
     private Consumer<InventoryAPI> function;
     private Consumer<InventoryCloseEvent> closeEvent;
+    private Consumer<InventoryClickEvent> clickEvent;
     private boolean interactionCancel;
     private boolean refreshed;
     private boolean build;
@@ -217,10 +218,18 @@ public class InventoryAPI implements Listener {
         return this.refreshed;
     }
 
-    JavaPlugin getPlugin() {
+    /**
+     * Get the {@link JavaPlugin} which is used to create the inventory.
+     * @return the {@link JavaPlugin}
+     */
+    public JavaPlugin getPlugin() {
         return this.plugin;
     }
 
+    /**
+     * Get the {@link Inventory} which is built after the {@link #build(Player)} method.
+     * @return the {@link Inventory}
+     */
     Inventory getInventory() {
         return this.inventory;
     }
@@ -491,10 +500,9 @@ public class InventoryAPI implements Listener {
 
     @EventHandler
     public void onInteract(final InventoryClickEvent e) {
-        if (e.getInventory().equals(this.inventory)) {
+        if (e.getInventory().equals(this.inventory))
             if (this.clickEvent != null)
                 this.clickEvent.accept(e);
-        }
         if (e.getClickedInventory() == null)
             return;
         if (!e.getClickedInventory().equals(this.inventory))
