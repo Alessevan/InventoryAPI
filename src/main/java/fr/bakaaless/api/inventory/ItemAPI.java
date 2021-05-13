@@ -48,6 +48,23 @@ public class ItemAPI {
     }
 
     /**
+     * @param slot The slot where will be located the item.
+     * @param item The wished ItemStack
+     * @param function A function that return an ItemStack, for the refresh task
+     * @param cancelled The boolean to enable/disable the interaction protection for this slot
+     * @param consumer A lambda expression that correspond to the executed code when item is clicked
+     */
+    private ItemAPI(final int slot, final ItemStack item, final Function<Object, ItemStack> function, final boolean cancelled, final Consumer<InventoryClickEvent> consumer) {
+        this.slot = slot;
+        this.item = item;
+        this.function = function;
+        this.item = new ItemStack(Material.AIR);
+        this.refresh(this);
+        this.cancelled = cancelled;
+        this.consumer = consumer;
+    }
+
+    /**
      * Refresh this item at its slot.
      * @param o An {@link InventoryAPI} instance.
      */
@@ -123,5 +140,20 @@ public class ItemAPI {
      */
     public void setConsumer(final Consumer<InventoryClickEvent> consumer) {
         this.consumer = consumer;
+    }
+
+    public ItemAPI clone() {
+        return new ItemAPI(this.slot, this.item, this.function, this.cancelled, this.consumer);
+    }
+
+    @Override
+    public String toString() {
+        return "ItemAPI{" +
+                "slot=" + this.slot +
+                ", function=" + this.function +
+                ", item=" + this.item +
+                ", cancelled=" + this.cancelled +
+                ", consumer=" + this.consumer +
+                '}';
     }
 }

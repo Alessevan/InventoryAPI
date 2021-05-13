@@ -451,6 +451,17 @@ public class InventoryAPI implements Listener {
         return this;
     }
 
+    public InventoryAPI applyTemplate(final Template template) {
+        template.getItems().forEach(item ->
+                this.addItem(item.clone())
+        );
+        return this;
+    }
+
+    public Template generateTemplate() {
+        return new Template(this.getItems());
+    }
+
     /**
      * Build and open the inventory to a player
      * @param player The player to open the inventory
@@ -561,5 +572,23 @@ public class InventoryAPI implements Listener {
             return;
         this.items.stream().filter(item -> e.getInventorySlots().contains(item.getSlot()) || e.getRawSlots().contains(item.getSlot()))
                 .forEach(item -> e.setCancelled(e.isCancelled() || item.isCancelled()));
+    }
+
+    @Override
+    public String toString() {
+        return "InventoryAPI{" +
+                "inventory=" + this.inventory +
+                ", size=" + this.size +
+                ", title='" + this.title + '\'' +
+                ", type=" + this.type +
+                ", items=" + this.items +
+                ", function=" + this.function +
+                ", closeEvent=" + this.closeEvent +
+                ", clickEvent=" + this.clickEvent +
+                ", interactionCancel=" + this.interactionCancel +
+                ", refreshed=" + this.refreshed +
+                ", build=" + this.build +
+                ", plugin=" + this.plugin +
+                '}';
     }
 }
