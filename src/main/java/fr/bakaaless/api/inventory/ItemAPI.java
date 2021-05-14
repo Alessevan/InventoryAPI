@@ -58,7 +58,6 @@ public class ItemAPI {
         this.slot = slot;
         this.item = item;
         this.function = function;
-        this.item = new ItemStack(Material.AIR);
         this.refresh(this);
         this.cancelled = cancelled;
         this.consumer = consumer;
