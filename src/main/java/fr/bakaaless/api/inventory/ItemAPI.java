@@ -143,7 +143,7 @@ public class ItemAPI {
     }
 
     public ItemAPI clone() {
-        return new ItemAPI(this.slot, this.item, this.function, this.cancelled, this.consumer);
+        return new ItemAPI(this.slot, this.item.clone(), this.function, this.cancelled, this.consumer);
     }
 
     @Override
